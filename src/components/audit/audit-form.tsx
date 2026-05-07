@@ -3,27 +3,31 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { AI_TOOLS, USE_CASES } from '@/lib/constants/pricing';
-import type { SpendItem } from '@/lib/types';
+import { AI_TOOLS, USE_CASES, type UseCase } from '@/lib/constants/pricing';
+import type { ApiResponse, AuditResult, SpendItem } from '@/lib/types';
+import { readJsonResponse } from '@/lib/fetch-json';
 import { generateId } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { Plus, Trash2, ArrowRight, Loader2, Sparkles } from 'lucide-react';
+
+type DraftSpendItem = Partial<SpendItem> & { id: string };
 
 export function AuditForm() {
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
   // Form State
   const [teamSize, setTeamSize] = useState<number>(10);
-  const [useCase, setUseCase] = useState<string>('coding');
+  const [useCase, setUseCase] = useState<UseCase>('coding');
   const [email, setEmail] = useState('');
   
-  const [items, setItems] = useState<Partial<SpendItem>[]>([
+  const [items, setItems] = useState<DraftSpendItem[]>([
     { id: generateId(), toolId: 'github-copilot', currentPlan: 'Business', seats: 10, monthlySpend: 190 }
   ]);
 
@@ -59,21 +63,27 @@ export function AuditForm() {
 
   const submitAudit = async () => {
     setLoading(true);
+    setErrorMessage(null);
+
     try {
       // Prepare data
-      const finalItems: SpendItem[] = items.map(item => {
+      const finalItems: SpendItem[] = items.flatMap(item => {
+        if (!item.toolId || !item.currentPlan) {
+          return [];
+        }
+
         const tool = AI_TOOLS.find(t => t.id === item.toolId);
-        return {
-          id: item.id!,
-          toolId: item.toolId!,
+        return [{
+          id: item.id,
+          toolId: item.toolId,
           toolName: tool?.name || 'Unknown Tool',
-          currentPlan: item.currentPlan!,
+          currentPlan: item.currentPlan,
           monthlySpend: item.monthlySpend || 0,
           seats: item.seats || 1,
           teamSize,
-          useCase: useCase as any,
-        };
-      }).filter(item => item.toolId && item.currentPlan);
+          useCase,
+        }];
+      });
 
       const response = await fetch('/api/audit', {
         method: 'POST',
@@ -84,14 +94,21 @@ export function AuditForm() {
         }),
       });
 
-      const data = await response.json();
-      if (data.success) {
-        // Save locally for demo purposes, since no DB is set up
-        localStorage.setItem(`audit_${data.data.id}`, JSON.stringify(data.data));
-        router.push(`/audit/${data.data.id}`);
+      const data = await readJsonResponse<ApiResponse<{ id: string; auditResult: AuditResult; persisted: boolean }>>(response);
+
+      if (!response.ok || !data.success || !data.data?.id || !data.data.auditResult) {
+        throw new Error(data.error || 'Failed to generate your audit report.');
       }
+
+      localStorage.setItem(
+        `audit_${data.data.id}`,
+        JSON.stringify(data.data.auditResult)
+      );
+      router.push(`/audit/${data.data.id}`);
     } catch (error) {
       console.error(error);
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to generate your audit report.');
+    } finally {
       setLoading(false);
     }
   };
@@ -142,7 +159,7 @@ export function AuditForm() {
                   
                   <div className="space-y-2">
                     <Label>Primary AI Use Case</Label>
-                    <Select value={useCase} onValueChange={setUseCase}>
+                    <Select value={useCase} onValueChange={(value) => setUseCase(value as UseCase)}>
                       <SelectTrigger className="py-6 text-lg">
                         <SelectValue />
                       </SelectTrigger>
@@ -178,7 +195,7 @@ export function AuditForm() {
                 </div>
 
                 <div className="space-y-4">
-                  {items.map((item, index) => {
+                  {items.map((item) => {
                     const tool = AI_TOOLS.find(t => t.id === item.toolId);
                     
                     return (
@@ -289,7 +306,7 @@ export function AuditForm() {
               
               <h2 className="text-3xl font-semibold tracking-tight mb-2">Audit Ready</h2>
               <p className="text-zinc-500 dark:text-zinc-400 mb-8 max-w-sm mx-auto">
-                We've analyzed your setup. Enter your work email to view your personalized optimization report.
+                We&apos;ve analyzed your setup. Enter your work email to view your personalized optimization report.
               </p>
 
               <div className="space-y-4 max-w-sm mx-auto">
@@ -317,8 +334,14 @@ export function AuditForm() {
                 </Button>
                 
                 <p className="text-xs text-zinc-400">
-                  We'll email you a copy. No spam, ever.
+                  We&apos;ll email you a copy. No spam, ever.
                 </p>
+
+                {errorMessage ? (
+                  <p className="text-sm text-red-500 dark:text-red-400">
+                    {errorMessage}
+                  </p>
+                ) : null}
               </div>
               
               <div className="mt-8 pt-8 border-t border-zinc-200 dark:border-zinc-800">

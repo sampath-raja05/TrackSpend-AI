@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type SVGProps } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { readJsonResponse } from '@/lib/fetch-json';
 import { formatCurrency } from '@/lib/utils';
-import type { AuditResult, Recommendation } from '@/lib/types';
+import type { ApiResponse, AuditResult, Recommendation } from '@/lib/types';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { ArrowLeft, CheckCircle2, AlertTriangle, ArrowRight, TrendingDown, Info, Zap } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, TrendingDown, Info, Zap } from 'lucide-react';
 import Link from 'next/link';
 
 export default function AuditResultsPage() {
@@ -16,20 +17,51 @@ export default function AuditResultsPage() {
   const router = useRouter();
   const [result, setResult] = useState<AuditResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchAudit = async () => {
-      try {
-        const response = await fetch(`/api/audit/${params.id}`);
-        const data = await response.json();
-        
-        if (data.success) {
-          setResult(data.data);
-        } else {
-          console.error(data.error);
+      const rawAuditId = params.id;
+      const auditId = Array.isArray(rawAuditId) ? rawAuditId[0] : rawAuditId;
+
+      if (!auditId) {
+        setErrorMessage('Missing audit ID.');
+        setLoading(false);
+        return;
+      }
+
+      const loadCachedAudit = () => {
+        const cachedAudit = localStorage.getItem(`audit_${auditId}`);
+
+        if (!cachedAudit) {
+          return false;
         }
+
+        try {
+          setResult(JSON.parse(cachedAudit) as AuditResult);
+          setErrorMessage(null);
+          return true;
+        } catch (parseError) {
+          console.error('Failed to read cached audit:', parseError);
+          return false;
+        }
+      };
+
+      try {
+        setErrorMessage(null);
+        const response = await fetch(`/api/audit/${auditId}`);
+        const data = await readJsonResponse<ApiResponse<AuditResult>>(response);
+        
+        if (!response.ok || !data.success || !data.data) {
+          throw new Error(data.error || 'Unable to load this audit report.');
+        }
+
+        setResult(data.data);
       } catch (error) {
         console.error("Error fetching audit:", error);
+        if (!loadCachedAudit()) {
+          setErrorMessage(error instanceof Error ? error.message : 'Unable to load this audit report.');
+        }
       } finally {
         setLoading(false);
       }
@@ -54,13 +86,12 @@ export default function AuditResultsPage() {
   if (!result) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-black">
-        <h1 className="text-2xl font-bold mb-4">Audit not found</h1>
+        <h1 className="text-2xl font-bold mb-4">{errorMessage || 'Audit not found'}</h1>
         <Button onClick={() => router.push('/')}>Go back home</Button>
       </div>
     );
   }
 
-  const hasSavings = result.totalMonthlySavings > 0;
   const efficient = result.savingsCategory === 'optimized';
 
   return (
@@ -223,7 +254,7 @@ function RecommendationCard({ recommendation: rec }: { recommendation: Recommend
   );
 }
 
-function SparklesIcon(props: any) {
+function SparklesIcon(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       {...props}

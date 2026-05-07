@@ -86,7 +86,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Right-size Plans</h3>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                  Stop paying for Enterprise features your team doesn't use. We identify when to downgrade without losing functionality.
+                  Stop paying for Enterprise features your team doesn&apos;t use. We identify when to downgrade without losing functionality.
                 </p>
               </div>
               <div className="p-6 rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800">
@@ -104,7 +104,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl font-semibold mb-2">API Migration</h3>
                 <p className="text-zinc-600 dark:text-zinc-400">
-                  Discover when it's more cost-effective to switch from seat-based subscriptions to direct API usage for heavy users.
+                  Discover when it&apos;s more cost-effective to switch from seat-based subscriptions to direct API usage for heavy users.
                 </p>
               </div>
             </div>

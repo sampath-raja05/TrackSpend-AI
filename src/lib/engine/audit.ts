@@ -11,13 +11,12 @@
  * - Acknowledge when spending is already efficient
  */
 
-import { AI_TOOLS, getToolById, type AITool, type PlanTier } from '@/lib/constants/pricing';
+import { getToolById, type AITool, type PlanTier } from '@/lib/constants/pricing';
 import type {
   SpendItem,
   AuditItemResult,
   AuditResult,
   Recommendation,
-  RecommendationType,
 } from '@/lib/types';
 import { generateId, getSavingsCategory } from '@/lib/utils';
 
@@ -227,8 +226,8 @@ function checkApiMigration(item: SpendItem, tool: AITool): Recommendation | null
   const dailyTokens = item.useCase === 'data-analysis' ? 200000 : 100000;
   const monthlyTokens = dailyTokens * 22; // ~22 working days
   const estimatedApiCost = (
-    (monthlyTokens * 0.3 * tool.apiPricing.inputPer1kTokens) + // 30% input
-    (monthlyTokens * 0.7 * tool.apiPricing.outputPer1kTokens)   // 70% output
+    ((monthlyTokens / 1000) * 0.3 * tool.apiPricing.inputPer1kTokens) + // 30% input
+    ((monthlyTokens / 1000) * 0.7 * tool.apiPricing.outputPer1kTokens)  // 70% output
   ) * item.seats;
 
   const savings = item.monthlySpend - estimatedApiCost;
@@ -404,21 +403,25 @@ function calculateBestSavings(recommendations: Recommendation[]): number {
   if (actionable.length === 0) return 0;
 
   // Group by type priority
-  const byConfidence = {
-    high: actionable.filter(r => r.confidence === 'high'),
-    medium: actionable.filter(r => r.confidence === 'medium'),
-    low: actionable.filter(r => r.confidence === 'low'),
-  };
+  const byConfidence = (confidence: Recommendation['confidence']) =>
+    actionable
+      .filter(recommendation => recommendation.confidence === confidence)
+      .sort((a, b) => b.monthlySavings - a.monthlySavings);
 
   // Use highest confidence recommendation first
-  const primary = byConfidence.high[0] || byConfidence.medium[0];
-  if (!primary) {
+  const highConfidence = byConfidence('high');
+  if (highConfidence.length > 0) {
     // Only low-confidence recommendations — use conservative estimate
-    const best = actionable.sort((a, b) => b.monthlySavings - a.monthlySavings)[0];
-    return Math.round(best.monthlySavings * 0.5); // 50% discount for low confidence
+    return Math.round(highConfidence[0].monthlySavings);
   }
 
-  return Math.round(primary.monthlySavings);
+  const mediumConfidence = byConfidence('medium');
+  if (mediumConfidence.length > 0) {
+    return Math.round(mediumConfidence[0].monthlySavings);
+  }
+
+  const lowConfidence = byConfidence('low');
+  return Math.round(lowConfidence[0].monthlySavings * 0.5);
 }
 
 function calculateEfficiencyScore(item: SpendItem, savings: number): number {
