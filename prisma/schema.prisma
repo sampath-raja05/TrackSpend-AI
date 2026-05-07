@@ -1,0 +1,38 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Lead {
+  id        String   @id @default(uuid())
+  email     String   
+  teamSize  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  auditId   String?  @unique
+  audit     Audit?   @relation(fields: [auditId], references: [id])
+}
+
+model Audit {
+  id                     String   @id
+  createdAt              DateTime @default(now())
+  
+  totalMonthlySpend      Float
+  totalMonthlySavings    Float
+  totalAnnualSavings     Float
+  overallEfficiencyScore Int
+  savingsCategory        String
+  aiSummary              String?
+  
+  // Storing the complex JSON structure of items and recommendations
+  itemsData              String   // JSON stringified AuditItemResult[]
+  
+  lead                   Lead?
+}
