@@ -11,13 +11,13 @@ https://your-deployed-url.vercel.app
 ## 📸 Screenshots
 
 ### Landing Page
-![Landing Page](./src/screenshots/landing page.png)
+![Landing Page](https://github.com/sampath-raja05/TrackSpend-AI/blob/ba4d3ab9b34cb6a8b52353a5175116093a180b88/src/screenshots/landing%20page.png)
 
 ### Audit Form
-![Audit Form](./src/screenshots/audit form.png)
+![Audit Form](https://github.com/sampath-raja05/TrackSpend-AI/blob/ba4d3ab9b34cb6a8b52353a5175116093a180b88/src/screenshots/audit%20form.png)
 
 ### Audit Results Dashboard
-![Results Dashboard](./src/screenshots/audit result.png)
+![Results Dashboard](https://github.com/sampath-raja05/TrackSpend-AI/blob/ba4d3ab9b34cb6a8b52353a5175116093a180b88/src/screenshots/audit%20result.png)
 
 ---
 
