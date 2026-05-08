@@ -110,5 +110,5 @@ function generateFallbackSummary(audit: AuditResult): string {
 
   // High savings
   const topItem = audit.items.sort((a, b) => b.totalMonthlySavings - a.totalMonthlySavings)[0];
-  return `There's a significant opportunity to optimize your AI spend. We found ${formatCurrency(audit.totalMonthlySavings)}/month in potential savings (${formatCurrency(audit.totalAnnualSavings)}/year). Your ${topItem?.spendItem.toolName} spending stands out as the primary optimization target. Consider scheduling a Credex consultation to build a migration plan that minimizes workflow disruption.`;
+  return `There's a significant opportunity to optimize your AI spend. We found ${formatCurrency(audit.totalMonthlySavings)}/month in potential savings (${formatCurrency(audit.totalAnnualSavings)}/year). Your ${topItem?.spendItem.toolName} spending stands out as the primary optimization target. Consider scheduling a TrackSpend AI consultation to build a migration plan that minimizes workflow disruption.`;
 }

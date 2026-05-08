@@ -1,7 +1,3 @@
-/**
- * Core type definitions for the Credex AI Spend Audit platform.
- */
-
 import type { UseCase } from '@/lib/constants/pricing';
 
 // ─── Spend Input Types ──────────────────────────────────────────────

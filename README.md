@@ -1,36 +1,44 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TrackSpend AI Spend Audit
 
-## Getting Started
+TrackSpend AI Spend Audit is a free Next.js app for founders and engineering leaders who want a fast second opinion on AI tooling spend. Users enter tools, plans, seats, monthly spend, team size, and use case, then receive a per-tool savings audit with shareable results and optional follow-up capture after value is shown.
 
-First, run the development server:
+## Screenshots
+
+Add three screenshots before submission:
+
+- Landing page with the spend input form
+- Audit results hero and AI summary
+- Tool breakdown showing recommendations
+
+## Quick Start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm run lint
+npm test
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Local app: http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Deployed URL: TODO after Vercel/Netlify deployment.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Decisions
 
-## Learn More
+- Used Next.js App Router and TypeScript because the app needs interactive UI, API routes, and shareable public URLs in one deployable codebase.
+- Kept audit math rule-based instead of LLM-based so savings are deterministic, testable, and finance-readable.
+- Generated the AI paragraph only after the hardcoded audit engine finishes, with a templated fallback when Anthropic fails or is not configured.
+- Moved email capture after the user sees the report so the tool gives value before asking for contact details.
+- Used SQLite/Prisma locally for fast iteration; a production deploy should use Postgres/Supabase for concurrent writes and backups.
 
-To learn more about Next.js, take a look at the following resources:
+## Required Environment
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+DATABASE_URL="file:./dev.db"
+ANTHROPIC_API_KEY="..."
+RESEND_API_KEY="..."
+NEXT_PUBLIC_APP_URL="https://your-deployed-url.example"
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+No secrets should be committed.
