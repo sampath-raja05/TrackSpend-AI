@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Resend } from 'resend';
-import { getPrismaClient } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { captureLeadRequestSchema } from '@/lib/validation/audit';
 
 function getResendClient() {
@@ -31,7 +31,7 @@ export async function POST(
       );
     }
 
-    const prisma = getPrismaClient();
+    // Use the imported prisma instance directly
     const audit = await prisma.audit.findUnique({
       where: { id },
     });

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { runAudit } from '@/lib/engine/audit';
 import { generateAuditSummary } from '@/lib/services/ai-summary';
-import { getPrismaClient } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { createAuditRequestSchema } from '@/lib/validation/audit';
 import { Resend } from 'resend';
 
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     // Save to Database
     let persisted = true;
     try {
-      const prisma = getPrismaClient();
+      // Use the imported prisma instance directly
       await prisma.audit.create({
         data: {
           id: auditResult.id,

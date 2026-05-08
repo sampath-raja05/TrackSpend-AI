@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getPrismaClient } from '@/lib/db';
+import { prisma } from '@/lib/db';
 
 export async function GET(
   _req: Request,
@@ -7,7 +7,7 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    const prisma = getPrismaClient();
+    // Use the imported prisma instance directly
     const audit = await prisma.audit.findUnique({
       where: { id },
     });

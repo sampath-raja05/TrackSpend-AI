@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { getPrismaClient } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { formatCurrency } from '@/lib/utils';
 
 export const size = {
@@ -11,7 +11,7 @@ export const contentType = 'image/png';
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const prisma = getPrismaClient();
+  // Use the imported prisma instance directly
   const audit = await prisma.audit.findUnique({
     where: { id },
   });

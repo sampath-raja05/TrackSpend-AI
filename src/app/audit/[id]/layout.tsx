@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { getPrismaClient } from '@/lib/db';
+import { prisma } from '@/lib/db';
 import { formatCurrency } from '@/lib/utils';
 
 type AuditLayoutProps = {
@@ -9,7 +9,7 @@ type AuditLayoutProps = {
 
 export async function generateMetadata({ params }: AuditLayoutProps): Promise<Metadata> {
   const { id } = await params;
-  const prisma = getPrismaClient();
+  // Use the imported prisma instance directly
   const audit = await prisma.audit.findUnique({
     where: { id },
   });
