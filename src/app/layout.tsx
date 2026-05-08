@@ -13,8 +13,20 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Credex | AI Spend Audit & Optimization",
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
+  title: "TrackSpend AI | AI Spend Audit & Optimization",
   description: "Optimize your AI tooling spend without sacrificing team productivity. Professional auditing for engineering leaders.",
+  openGraph: {
+    title: "TrackSpend AI | AI Spend Audit & Optimization",
+    description: "Find unused seats, overpriced AI plans, and realistic monthly savings in minutes.",
+    type: "website",
+    url: "/",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TrackSpend AI | AI Spend Audit & Optimization",
+    description: "Find unused seats, overpriced AI plans, and realistic monthly savings in minutes.",
+  },
 };
 
 export default function RootLayout({

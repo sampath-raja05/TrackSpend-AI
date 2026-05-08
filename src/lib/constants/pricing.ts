@@ -120,10 +120,10 @@ export const AI_TOOLS: AITool[] = [
       },
       {
         name: 'Team',
-        monthlyPricePerSeat: 30,
+        monthlyPricePerSeat: 25,
         features: ['Everything in Pro', 'Team workspace', 'Admin controls', 'Higher limits'],
         bestFor: 'Small teams',
-        minSeats: 2,
+        minSeats: 5,
         annualDiscount: 17,
       },
       {
@@ -181,9 +181,9 @@ export const AI_TOOLS: AITool[] = [
       },
     ],
     apiPricing: {
-      inputPer1kTokens: 0.005,
-      outputPer1kTokens: 0.015,
-      description: 'GPT-4o: $5/M input, $15/M output',
+      inputPer1kTokens: 0.0025,
+      outputPer1kTokens: 0.01,
+      description: 'GPT-4o: $2.50/M input, $10/M output',
     },
   },
   {
@@ -219,9 +219,9 @@ export const AI_TOOLS: AITool[] = [
       },
     ],
     apiPricing: {
-      inputPer1kTokens: 0.005,
-      outputPer1kTokens: 0.015,
-      description: 'GPT-4o: $5/M input, $15/M output',
+      inputPer1kTokens: 0.0025,
+      outputPer1kTokens: 0.01,
+      description: 'GPT-4o: $2.50/M input, $10/M output',
     },
   },
   {
@@ -269,13 +269,13 @@ export const AI_TOOLS: AITool[] = [
       },
       {
         name: 'Pro',
-        monthlyPricePerSeat: 15,
+        monthlyPricePerSeat: 20,
         features: ['Unlimited flows', 'GPT-4 & Claude', 'Priority access'],
         bestFor: 'Individual developers',
       },
       {
         name: 'Team',
-        monthlyPricePerSeat: 30,
+        monthlyPricePerSeat: 40,
         features: ['Everything in Pro', 'Team management', 'Shared context'],
         bestFor: 'Development teams',
         minSeats: 2,

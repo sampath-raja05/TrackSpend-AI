@@ -28,5 +28,7 @@ const leadSchema = z.object({
 
 export const createAuditRequestSchema = z.object({
   items: z.array(spendItemSchema).min(1),
-  lead: leadSchema,
+  lead: leadSchema.optional(),
 });
+
+export const captureLeadRequestSchema = leadSchema;

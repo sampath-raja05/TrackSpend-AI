@@ -55,16 +55,18 @@ export async function POST(req: Request) {
         }
       });
 
-      try {
-        await prisma.lead.create({
-          data: {
-            email: lead.email,
-            teamSize: lead.teamSize ?? null,
-            auditId: auditResult.id,
-          },
-        });
-      } catch (leadError) {
-        console.error('Lead capture failed:', leadError);
+      if (lead) {
+        try {
+          await prisma.lead.create({
+            data: {
+              email: lead.email,
+              teamSize: lead.teamSize ?? null,
+              auditId: auditResult.id,
+            },
+          });
+        } catch (leadError) {
+          console.error('Lead capture failed:', leadError);
+        }
       }
     } catch (databaseError) {
       persisted = false;
@@ -73,9 +75,9 @@ export async function POST(req: Request) {
 
     // Send Email (Fire and forget, don't wait for it to finish)
     const resend = getResendClient();
-    if (resend) {
+    if (resend && lead) {
       void resend.emails.send({
-        from: 'Credex <audits@credex.dev>',
+        from: 'TrackSpend AI <audits@TrackSpend AI.dev>',
         to: [lead.email],
         subject: `Your AI Spend Audit Results (${auditResult.overallEfficiencyScore}/100 Efficiency)`,
         html: `

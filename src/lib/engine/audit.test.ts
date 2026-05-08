@@ -67,6 +67,72 @@ describe('runAudit', () => {
     expect(alternative?.monthlySavings).toBeGreaterThan(0);
   });
 
+  it('does not suggest individual-grade alternatives for a team-grade Copilot setup', () => {
+    const result = runAudit([
+      buildSpendItem({
+        monthlySpend: 190,
+        seats: 10,
+        teamSize: 10,
+      }),
+    ]);
+
+    expect(result.totalMonthlySavings).toBe(0);
+    expect(
+      result.items[0].recommendations.some(
+        recommendation =>
+          recommendation.type === 'alternative' &&
+          recommendation.alternativeTool === 'Windsurf'
+      )
+    ).toBe(false);
+    expect(result.items[0].recommendations.some(rec => rec.type === 'efficient')).toBe(true);
+  });
+
+  it('surfaces discounted credit opportunities for large retail AI spend', () => {
+    const result = runAudit([
+      buildSpendItem({
+        toolId: 'openai-api',
+        toolName: 'OpenAI API',
+        currentPlan: 'API Direct',
+        monthlySpend: 1200,
+        seats: 1,
+        teamSize: 6,
+        useCase: 'mixed',
+      }),
+    ]);
+
+    const creditRecommendation = result.items[0].recommendations.find(
+      recommendation => recommendation.type === 'switch-plan'
+    );
+
+    expect(creditRecommendation?.title).toContain('TrackSpend AI');
+    expect(creditRecommendation?.monthlySavings).toBe(240);
+  });
+
+  it('produces different primary recommendations for different inputs', () => {
+    const oversizedSeats = runAudit([
+      buildSpendItem({
+        monthlySpend: 190,
+        seats: 10,
+        teamSize: 3,
+      }),
+    ]);
+    const highApiSpend = runAudit([
+      buildSpendItem({
+        id: 'api-1',
+        toolId: 'anthropic-api',
+        toolName: 'Anthropic API',
+        currentPlan: 'API Direct',
+        monthlySpend: 800,
+        seats: 1,
+        teamSize: 8,
+        useCase: 'research',
+      }),
+    ]);
+
+    expect(oversizedSeats.items[0].recommendations[0].type).toBe('optimize-seats');
+    expect(highApiSpend.items[0].recommendations[0].type).toBe('switch-plan');
+  });
+
   it('marks already-efficient spending honestly when there is nothing to save', () => {
     const result = runAudit([
       buildSpendItem({

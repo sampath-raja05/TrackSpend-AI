@@ -1,16 +1,3 @@
-/**
- * Credex AI Spend Audit Engine
- * 
- * Core business logic for analyzing AI tool spending and generating
- * optimization recommendations. This is the financial brain of the platform.
- * 
- * Philosophy:
- * - Be honest about savings — never inflate numbers
- * - Recommend only when there's genuine value
- * - Consider team dynamics and workflow disruption
- * - Acknowledge when spending is already efficient
- */
-
 import { getToolById, type AITool, type PlanTier } from '@/lib/constants/pricing';
 import type {
   SpendItem,
@@ -73,6 +60,9 @@ function analyzeSpendItem(item: SpendItem, allItems: SpendItem[]): AuditItemResu
 
   const alternatives = checkAlternatives(item, tool, allItems);
   alternatives.forEach(alt => recommendations.push(alt));
+
+  const retailCredits = checkRetailCreditOpportunity(item, tool);
+  if (retailCredits) recommendations.push(retailCredits);
 
   const consolidation = checkConsolidation(item, allItems);
   if (consolidation) recommendations.push(consolidation);
@@ -255,30 +245,22 @@ function checkAlternatives(item: SpendItem, tool: AITool, allItems: SpendItem[])
   const alreadyUsedTools = new Set(allItems.map(i => i.toolId));
 
   // Coding assistant alternatives
-  if (tool.category === 'coding-assistant' && item.monthlySpend > 25) {
-    const alternatives: Array<{ id: string; name: string; plan: string; cost: number; note: string }> = [];
+  if (tool.category === 'coding-assistant' && item.monthlySpend > 25 && isCodingUseCase(item)) {
+    const alternativeTools = ['github-copilot', 'cursor', 'windsurf']
+      .filter(toolId => toolId !== item.toolId && !alreadyUsedTools.has(toolId))
+      .map(toolId => getToolById(toolId))
+      .filter((alternativeTool): alternativeTool is AITool => Boolean(alternativeTool));
 
-    if (!alreadyUsedTools.has('github-copilot') && item.toolId !== 'github-copilot') {
-      alternatives.push({
-        id: 'github-copilot',
-        name: 'GitHub Copilot',
-        plan: 'Individual',
-        cost: 10 * item.seats,
-        note: 'Excellent IDE integration and GitHub-native workflows',
-      });
-    }
+    for (const alternativeTool of alternativeTools) {
+      const alternativePlan = getComparableAlternativePlan(item, alternativeTool);
+      if (!alternativePlan) continue;
 
-    if (!alreadyUsedTools.has('windsurf') && item.toolId !== 'windsurf') {
-      alternatives.push({
-        id: 'windsurf',
-        name: 'Windsurf',
-        plan: 'Pro',
-        cost: 15 * item.seats,
-        note: 'AI-native editor with Cascade flows at a lower price point',
-      });
-    }
-
-    for (const alt of alternatives) {
+      const alt = {
+        name: alternativeTool.name,
+        plan: alternativePlan.name,
+        cost: alternativePlan.monthlyPricePerSeat * item.seats,
+        note: getAlternativeNote(alternativeTool.id),
+      };
       const savings = item.monthlySpend - alt.cost;
       if (savings > 10) {
         recommendations.push({
@@ -342,6 +324,70 @@ function checkAlternatives(item: SpendItem, tool: AITool, allItems: SpendItem[])
 }
 
 // ─── Check: Consolidation ───────────────────────────────────────────
+
+function isCodingUseCase(item: SpendItem): boolean {
+  return item.useCase === 'coding' || item.useCase === 'mixed';
+}
+
+function getComparableAlternativePlan(item: SpendItem, alternativeTool: AITool): PlanTier | null {
+  const paidPlans = alternativeTool.plans.filter(plan => plan.monthlyPricePerSeat > 0);
+
+  if (item.seats >= 25 || item.currentPlan === 'Enterprise') {
+    return paidPlans.find(plan => plan.name === 'Enterprise') ?? null;
+  }
+
+  if (item.seats >= 4 || item.currentPlan === 'Business' || item.currentPlan === 'Team') {
+    return paidPlans.find(plan => plan.name === 'Business' || plan.name === 'Team') ?? null;
+  }
+
+  return paidPlans.find(plan =>
+    plan.name === 'Individual' ||
+    plan.name === 'Pro' ||
+    plan.name === 'Plus'
+  ) ?? null;
+}
+
+function getAlternativeNote(toolId: string): string {
+  if (toolId === 'github-copilot') {
+    return 'Excellent IDE integration and GitHub-native workflows';
+  }
+
+  if (toolId === 'cursor') {
+    return 'AI-native editor with strong coding-agent workflows';
+  }
+
+  if (toolId === 'windsurf') {
+    return 'AI-native editor with Cascade flows and team collaboration';
+  }
+
+  return 'Comparable core capabilities at a lower total cost';
+}
+
+function checkRetailCreditOpportunity(item: SpendItem, tool: AITool): Recommendation | null {
+  const isCreditEligible =
+    tool.id === 'cursor' ||
+    tool.id === 'claude' ||
+    tool.id === 'chatgpt' ||
+    tool.id === 'anthropic-api' ||
+    tool.id === 'openai-api';
+
+  if (!isCreditEligible) return null;
+  if (item.monthlySpend < 500) return null;
+
+  const conservativeDiscountRate = 0.2;
+  const monthlySavings = Math.round(item.monthlySpend * conservativeDiscountRate);
+
+  return {
+    type: 'switch-plan',
+    title: 'Source discounted credits through TrackSpend AI',
+    description: `Your ${tool.name} spend is high enough that discounted credits are worth evaluating.`,
+    currentCost: item.monthlySpend,
+    recommendedCost: item.monthlySpend - monthlySavings,
+    monthlySavings,
+    confidence: 'medium',
+    reasoning: `At ${formatSimpleCurrency(item.monthlySpend)}/month, even a conservative 20% credit discount would save about ${formatSimpleCurrency(monthlySavings)}/month without changing your team's ${item.useCase} workflow. This is strongest for committed API, enterprise, or annualized spend where usage is predictable.`,
+  };
+}
 
 function checkConsolidation(item: SpendItem, allItems: SpendItem[]): Recommendation | null {
   // Find overlapping tools in the same category
