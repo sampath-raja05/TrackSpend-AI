@@ -2,6 +2,9 @@ import type { Metadata } from 'next';
 import { prisma } from '@/lib/db';
 import { formatCurrency } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 type AuditLayoutProps = {
   children: React.ReactNode;
   params: Promise<{ id: string }>;

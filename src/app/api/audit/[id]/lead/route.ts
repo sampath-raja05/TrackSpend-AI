@@ -3,6 +3,9 @@ import { Resend } from 'resend';
 import { prisma } from '@/lib/db';
 import { captureLeadRequestSchema } from '@/lib/validation/audit';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
     return null;

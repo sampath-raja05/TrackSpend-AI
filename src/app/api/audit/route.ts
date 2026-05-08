@@ -5,6 +5,9 @@ import { prisma } from '@/lib/db';
 import { createAuditRequestSchema } from '@/lib/validation/audit';
 import { Resend } from 'resend';
 
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
 function getResendClient() {
   if (!process.env.RESEND_API_KEY) {
     return null;
