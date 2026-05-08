@@ -1,9 +1,203 @@
-# GTM
+# Target User
 
-The first target user is the founder/CTO or VP Engineering at a seed to Series B software company with 5-80 engineers. They have enough AI spend for waste to exist, but not enough finance operations maturity to audit every SaaS and API line item monthly. They are likely searching for things like "Cursor team pricing", "ChatGPT Team vs Enterprise", "Claude API cost spike", or reading X threads about AI coding tools getting expensive.
+The exact target user is:
 
-The best initial channels are specific and founder-heavy: Hacker News Show HN, r/SaaS, r/startups, Indie Hackers, Latent Space community threads, AI Engineer Slack groups, Cursor/Claude/Copilot comparison posts on X, and founder communities where people already complain about tool sprawl. The pitch should not be "AI spend optimization platform"; it should be "paste your AI stack and get a screenshot-worthy overspend audit in two minutes."
+**A technical founder or engineering lead at a 3–20 person startup that actively uses multiple AI tools across engineering, research, and content workflows.**
 
-For the first 100 users with no paid budget, I would ship one crisp launch post with a real example audit, then personally DM founders and engineering managers who recently posted about AI tool spend. I would also write comparison posts around the painful searches: "Cursor Business vs Copilot Business for a 10-person team" and "When Claude API beats team seats." Each post should link to a prefilled audit example and invite readers to run their own.
+Typical examples:
+- Founder at an AI SaaS startup
+- CTO of a seed-stage startup
+- Engineering manager at a bootstrapped SaaS company
+- Indie hacker managing multiple AI subscriptions personally
 
-TrackSpend AI's unfair channel is discounted-credit inventory. Most calculators can say "spend less"; TrackSpend AI can say "this exact kind of spend may be cheaper through credits." Week-1 traction would look like 100 completed audits, 25 captured emails, 5 high-savings consultation requests, and at least 3 conversations where a founder shares an invoice or tool stack for deeper review.
+These users usually:
+- pay for ChatGPT, Claude, Copilot, Cursor, Windsurf, or Perplexity,
+- experiment with new AI tools constantly,
+- and rarely track overlapping subscriptions carefully.
+
+They are cost-sensitive but still willing to pay for productivity gains.
+
+---
+
+# What They Search or Scroll Before Wanting This Tool
+
+Right before needing TrackSpend AI, they are usually:
+- checking Stripe charges,
+- reviewing SaaS expenses,
+- discussing AI tooling on X,
+- or deciding whether to renew subscriptions.
+
+Typical searches include:
+
+```text
+best AI coding assistant
+cursor vs copilot
+claude vs chatgpt for developers
+how much does chatgpt team cost
+reduce AI subscription costs
+AI tools worth paying for
+```
+
+They also often notice:
+- duplicate subscriptions,
+- unused seats,
+- or growing monthly AI expenses.
+
+The trigger is usually:
+> “Why are we suddenly spending $400–$1000/month on AI tools?”
+
+---
+
+# Where They Hang Out Online
+
+## Subreddits
+- r/SideProject
+- r/SaaS
+- r/Startups
+- r/Entrepreneur
+- r/ChatGPT
+- r/ClaudeAI
+- r/cursor
+- r/LocalLLaMA
+
+---
+
+## Slack Communities
+- Indie Hackers Slack
+- Buildspace community
+- SaaS Alliance Slack
+- GenAI Collective Slack
+
+---
+
+## Discord Servers
+- OpenAI Developer Community
+- Cursor Discord
+- Windsurf Discord
+- Vercel Community
+- AI Engineer Discord
+
+---
+
+## X (Twitter)
+They follow:
+- indie hackers,
+- AI engineers,
+- startup founders,
+- and “build in public” creators.
+
+Typical accounts:
+- small SaaS founders,
+- AI tool creators,
+- productivity engineers,
+- bootstrapped startup operators.
+
+---
+
+# How I’d Get the First 100 Users in 30 Days With $0 Budget
+
+## 1. Personalized Audit Outreach
+
+I would manually DM:
+- indie hackers,
+- small startup founders,
+- and technical builders on X.
+
+Not generic promotion.
+
+Example:
+> “I noticed your team uses Cursor + Claude + ChatGPT. I built a free tool that audits overlapping AI subscriptions and estimates savings opportunities.”
+
+This feels specific and relevant instead of spam.
+
+Goal:
+- 15–20 personalized DMs/day.
+
+---
+
+## 2. Roast Real AI Tool Stacks Publicly
+
+Create short public breakdowns like:
+
+```text
+$620/month AI stack for a 4-person startup:
+- ChatGPT Team
+- Claude Pro
+- Cursor Pro
+- Perplexity
+
+Potential waste detected:
+$180/month
+```
+
+Post them in:
+- X threads,
+- Reddit discussions,
+- indie hacker communities.
+
+This demonstrates value instantly.
+
+---
+
+## 3. Free AI Spend Reviews
+
+Offer:
+> “Send me your AI stack and I’ll audit it manually for free.”
+
+This creates:
+- conversations,
+- screenshots,
+- testimonials,
+- and referrals.
+
+---
+
+## 4. Launch in Small Communities First
+
+Instead of Product Hunt immediately, I would target:
+- niche AI Discords,
+- engineering Slack groups,
+- founder WhatsApp groups,
+- and college startup communities.
+
+Smaller communities respond more personally and provide better feedback.
+
+---
+
+# The Unfair Distribution Channel
+
+The unfair advantage is that the product targets people already discussing AI tooling publicly every day.
+
+Most founders openly tweet:
+- what tools they use,
+- what subscriptions they pay for,
+- and which AI products they are switching between.
+
+That makes discovery unusually easy.
+
+For example:
+- someone tweets “Cursor pricing is getting expensive”
+- TrackSpend AI can directly respond with a personalized audit offer.
+
+Very few SaaS categories have users publicly discussing their software stack this openly.
+
+---
+
+# What Week-1 Traction Looks Like
+
+If the idea resonates, realistic week-1 traction would be:
+
+- 300–500 landing page visitors
+- 40–60 completed audits
+- 15–20 email captures
+- 5+ users sharing results/screenshots
+- 3–5 users requesting deeper optimization help
+- At least 1 founder saying:
+  > “I didn’t realize we were paying for overlapping tools.”
+
+The key signal is not traffic.
+
+The key signal is:
+- users voluntarily sharing their AI stacks,
+- discussing spending pain,
+- and forwarding the audit to teammates.

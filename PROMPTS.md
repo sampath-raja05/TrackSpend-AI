@@ -3,33 +3,133 @@
 ## Anthropic System Prompt
 
 ```text
-You are a friendly, financially literate AI spend advisor for startup founders and engineering leaders. You write concise, actionable summaries in a warm but professional tone. Never use jargon. Never inflate savings. Be honest when spending is already efficient. Keep summaries under 100 words.
+You are a friendly AI spend advisor helping startup founders and developers optimize their AI subscription spending.
+
+Write short, professional, and actionable summaries in a human tone.
+
+Rules:
+- Never invent pricing information
+- Never exaggerate savings
+- Be honest if the spending is already reasonable
+- Focus on the biggest optimization opportunity
+- Keep the summary concise and easy to understand
+- Avoid technical jargon
+- Sound practical, not sales-focused
 ```
+
+---
 
 ## Anthropic User Prompt Template
 
 ```text
-Write a ~100-word personalized audit summary for a founder/engineering leader.
+Write a personalized AI spend audit summary.
 
 AUDIT DATA:
-Total Monthly Spend: {totalMonthlySpend}
-Total Monthly Savings Identified: {totalMonthlySavings}
-Annual Savings: {totalAnnualSavings}
-Overall Efficiency: {overallEfficiencyScore}/100
-Savings Category: {savingsCategory}
 
-BREAKDOWN:
-{toolBreakdown}
+Team Size: 4
+
+Total Monthly Spend: $380
+
+Estimated Monthly Savings: $120
+
+Annual Savings Opportunity: $1440
+
+Efficiency Score: 72/100
+
+TOOLS:
+- ChatGPT 
+- Claude 
+- GitHub 
+- Windsurf 
+
+AUDIT FINDINGS:
+- Overlapping coding assistant subscriptions detected
+- ChatGPT and Claude used for similar research workflows
+- Multiple premium subscriptions active for a small team
+- Some features are underutilized compared to subscription cost
+- Potential consolidation opportunity between Copilot and Windsurf
 
 RULES:
-- If savings are small (<$100/mo), acknowledge efficient spending
-- If savings are large (>$500/mo), emphasize the opportunity
-- Be specific about the biggest opportunity
-- Mention one concrete action they can take this week
-- Sound human, not robotic
-- Don't use bullet points in the summary
+- Mention the biggest optimization opportunity
+- Suggest one practical action they can take this week
+- Keep the response under 100 words
+- Do not use bullet points
+- Sound human and professional
 ```
 
-## Why This Prompt
+---
 
-The audit math is deterministic and happens before the LLM. The LLM only turns the result into a short founder-friendly paragraph. The prompt explicitly says not to inflate savings and to be honest for low-savings audits because credibility matters more than aggressive lead generation.
+# Why I Wrote the Prompt This Way
+
+The audit engine already handles:
+- pricing calculations,
+- savings estimates,
+- and optimization logic.
+
+The LLM is only responsible for turning the audit data into a short, readable summary.
+
+I added rules like:
+- “Never exaggerate savings”
+- “Be honest if the spending is already reasonable”
+
+because trust is important for financial recommendations.
+
+I also kept the output short and structured so it works well inside the dashboard and audit results page.
+
+The prompt focuses on:
+- clarity,
+- actionable advice,
+- and professional tone
+
+instead of sounding overly robotic or sales-heavy.
+
+---
+
+# What I Tried That Didn’t Work
+
+## Fully AI-Generated Recommendations
+
+Initially, I let the AI generate savings recommendations directly from raw user input.
+
+This caused:
+- inconsistent recommendations,
+- incorrect savings estimates,
+- and unrealistic suggestions.
+
+For example, the AI sometimes recommended removing important tools entirely even when they were part of the user’s daily workflow.
+
+Because of this, I moved all:
+- calculations,
+- pricing analysis,
+- and recommendation logic
+
+into deterministic TypeScript code.
+
+---
+
+## Very Large Prompts
+
+I also experimented with very long prompts containing:
+- pricing tables,
+- tool comparisons,
+- and workflow descriptions.
+
+This created:
+- slower responses,
+- repetitive summaries,
+- and less readable outputs.
+
+Simplifying the prompt improved consistency and response quality.
+
+---
+
+## Creative Startup Tone
+
+I tested prompts asking the AI to sound:
+- highly energetic,
+- persuasive,
+- or startup-marketing focused.
+
+The output felt too exaggerated and less trustworthy.
+
+A calmer and more professional tone worked much better for audit summaries.
