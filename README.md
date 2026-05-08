@@ -1,44 +1,101 @@
-# TrackSpend AI Spend Audit
+# TrackSpend AI
 
-TrackSpend AI Spend Audit is a free Next.js app for founders and engineering leaders who want a fast second opinion on AI tooling spend. Users enter tools, plans, seats, monthly spend, team size, and use case, then receive a per-tool savings audit with shareable results and optional follow-up capture after value is shown.
+TrackSpend AI is an AI subscription audit platform built for startups, indie hackers, and engineering teams to analyze and optimize spending across tools like ChatGPT, Claude, GitHub Copilot, and Windsurf. The platform identifies overlapping subscriptions, unused seats, and cost-saving opportunities while generating AI-powered audit summaries and downloadable PDF reports.
 
-## Screenshots
+## 🚀 Deployed URL
 
-Add three screenshots before submission:
+https://your-deployed-url.vercel.app
 
-- Landing page with the spend input form
-- Audit results hero and AI summary
-- Tool breakdown showing recommendations
+---
 
-## Quick Start
+## 📸 Screenshots
+
+### Landing Page
+![Landing Page](./src/screenshots/landing page.png)
+
+### Audit Form
+![Audit Form](./src/screenshots/audit form.png)
+
+### Audit Results Dashboard
+![Results Dashboard](./src/screenshots/audit result.png)
+
+---
+
+
+
+## ⚡ Quick Start
+
+### Clone Repository
+
+```bash
+git clone https://github.com/yourusername/trackspend-ai.git
+cd trackspend-ai
+```
+
+### Install Dependencies
 
 ```bash
 npm install
-npm run dev
-npm run lint
-npm test
-npm run build
 ```
 
-Local app: http://localhost:3000
+### Configure Environment Variables
 
-Deployed URL: TODO after Vercel/Netlify deployment.
+Create a `.env.local` file:
 
-## Decisions
+```env
+DATABASE_URL=
+DIRECT_URL=
 
-- Used Next.js App Router and TypeScript because the app needs interactive UI, API routes, and shareable public URLs in one deployable codebase.
-- Kept audit math rule-based instead of LLM-based so savings are deterministic, testable, and finance-readable.
-- Generated the AI paragraph only after the hardcoded audit engine finishes, with a templated fallback when Anthropic fails or is not configured.
-- Moved email capture after the user sees the report so the tool gives value before asking for contact details.
-- Used SQLite/Prisma locally for fast iteration; a production deploy should use Postgres/Supabase for concurrent writes and backups.
+ANTHROPIC_API_KEY=
+RESEND_API_KEY=
 
-## Required Environment
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
+
+### Run Database Migrations
 
 ```bash
-DATABASE_URL="file:./dev.db"
-ANTHROPIC_API_KEY="..."
-RESEND_API_KEY="..."
-NEXT_PUBLIC_APP_URL="https://your-deployed-url.example"
+npx prisma migrate dev
 ```
 
-No secrets should be committed.
+### Start Development Server
+
+```bash
+npm run dev
+```
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+---
+
+## 🚀 Deploy
+
+Deploy easily using Vercel:
+
+1. Push project to GitHub
+2. Import repository into Vercel
+3. Add environment variables
+4. Deploy
+
+---
+
+## ⚖️ Decisions & Trade-offs
+
+### 1. Rule-Based Audit Engine Instead of Fully AI-Generated Decisions
+I used deterministic business logic for financial recommendations to ensure reliable and predictable savings calculations.
+
+### 2. Anonymous Audits Instead of Mandatory Authentication
+Users can complete audits without creating accounts to reduce friction and improve completion rates.
+
+### 3. Supabase PostgreSQL Instead of SQLite
+I migrated from SQLite to Supabase PostgreSQL for better scalability, relational querying, and production readiness.
+
+### 4. Claude Used Only for Summaries
+Anthropic Claude generates human-readable executive summaries while the actual optimization logic remains rule-based for consistency.
+
+### 5. Server-Side PDF Generation
+PDF reports are generated server-side to maintain consistent formatting and simplify email delivery workflows.
