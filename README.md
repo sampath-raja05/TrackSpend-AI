@@ -4,7 +4,7 @@ TrackSpend AI is an AI subscription audit platform built for startups, indie hac
 
 ## 🚀 Deployed URL
 
-https://your-deployed-url.vercel.app
+https://track-spend-ai-sandy.vercel.app/
 
 ---
 
