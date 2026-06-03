@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server';
 import { runAudit } from '@/lib/engine/audit';
 import { generateAuditSummary } from '@/lib/services/ai-summary';
-import { prisma } from '@/lib/db';
 import { createAuditRequestSchema } from '@/lib/validation/audit';
 import { Resend } from 'resend';
+import { saveAuditResult } from '@/lib/sqlite';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -41,57 +41,30 @@ export async function POST(req: Request) {
     const summary = await generateAuditSummary({ auditResult });
     auditResult.aiSummary = summary;
 
-    // Save to Database
-    let persisted = true;
-    try {
-      // Use the imported prisma instance directly
-      await prisma.audit.create({
-        data: {
-          id: auditResult.id,
-          totalMonthlySpend: auditResult.totalMonthlySpend,
-          totalMonthlySavings: auditResult.totalMonthlySavings,
-          totalAnnualSavings: auditResult.totalAnnualSavings,
-          overallEfficiencyScore: auditResult.overallEfficiencyScore,
-          savingsCategory: auditResult.savingsCategory,
-          aiSummary: auditResult.aiSummary,
-          itemsData: JSON.stringify(auditResult.items),
-        }
-      });
-
-      if (lead) {
-        try {
-          await prisma.lead.create({
-            data: {
-              email: lead.email,
-              teamSize: lead.teamSize ?? null,
-              auditId: auditResult.id,
-            },
-          });
-        } catch (leadError) {
-          console.error('Lead capture failed:', leadError);
-        }
-      }
-    } catch (databaseError) {
-      persisted = false;
-      console.error('Audit persistence failed:', databaseError);
-    }
+    const persisted = saveAuditResult(auditResult, lead);
 
     // Send Email (Fire and forget, don't wait for it to finish)
     const resend = getResendClient();
     if (resend && lead) {
-      void resend.emails.send({
-        from: 'TrackSpend AI <audits@TrackSpend AI.dev>',
-        to: [lead.email],
-        subject: `Your AI Spend Audit Results (${auditResult.overallEfficiencyScore}/100 Efficiency)`,
-        html: `
-          <h1>Your AI Tooling Audit is Ready</h1>
-          <p>We found <strong>$${auditResult.totalAnnualSavings}</strong> in potential annual savings.</p>
-          <p>View your full interactive report here: <a href="http://localhost:3000/audit/${auditResult.id}">View Report</a></p>
-          <hr/>
-          <p><strong>AI Summary:</strong></p>
-          <p>${auditResult.aiSummary}</p>
-        `
-      }).catch(console.error);
+      try {
+        void resend.emails
+          .send({
+            from: 'TrackSpend AI <audits@trackspend.ai>',
+            to: [lead.email],
+            subject: `Your AI Spend Audit Results (${auditResult.overallEfficiencyScore}/100 Efficiency)`,
+            html: `
+              <h1>Your AI Tooling Audit is Ready</h1>
+              <p>We found <strong>$${auditResult.totalAnnualSavings}</strong> in potential annual savings.</p>
+              <p>View your full interactive report here: <a href="http://localhost:3000/audit/${auditResult.id}">View Report</a></p>
+              <hr/>
+              <p><strong>AI Summary:</strong></p>
+              <p>${auditResult.aiSummary}</p>
+            `,
+          })
+          .catch((error) => console.error('Audit email send failed:', error));
+      } catch (error) {
+        console.error('Audit email send failed:', error);
+      }
     }
 
     return NextResponse.json({

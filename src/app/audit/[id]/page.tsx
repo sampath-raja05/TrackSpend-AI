@@ -88,6 +88,13 @@ export default function AuditResultsPage() {
             response
           );
 
+        if (response.status === 503) {
+          setErrorMessage(
+            data.error || "Audit storage is temporarily unavailable. Please try again in a moment."
+          );
+          return;
+        }
+
         if (!response.ok || !data.success || !data.data) {
           throw new Error(
             data.error || "Unable to load this audit report."
@@ -96,9 +103,16 @@ export default function AuditResultsPage() {
 
         setResult(data.data);
       } catch (error) {
-        console.error("Error fetching audit:", error);
-
         if (!loadCachedAudit()) {
+          if (
+            error instanceof Error &&
+            error.message === "Audit storage is temporarily unavailable"
+          ) {
+            setErrorMessage(error.message);
+            return;
+          }
+
+          console.error("Error fetching audit:", error);
           setErrorMessage(
             error instanceof Error
               ? error.message

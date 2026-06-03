@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { prisma } from '@/lib/db';
+import { getAuditById } from '@/lib/audit-store';
 import { formatCurrency } from '@/lib/utils';
 
 export const dynamic = 'force-dynamic';
@@ -14,10 +14,7 @@ export const contentType = 'image/png';
 
 export default async function Image({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  // Use the imported prisma instance directly
-  const audit = await prisma.audit.findUnique({
-    where: { id },
-  });
+  const { audit } = await getAuditById(id);
 
   const monthlySavings = audit?.totalMonthlySavings ?? 0;
   const annualSavings = audit?.totalAnnualSavings ?? 0;

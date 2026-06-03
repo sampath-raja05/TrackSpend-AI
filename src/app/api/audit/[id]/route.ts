@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/db';
+import { getAuditById } from '@/lib/audit-store';
 
 export const dynamic = 'force-dynamic';
 export const runtime = 'nodejs';
@@ -10,18 +10,23 @@ export async function GET(
 ) {
   try {
     const { id } = await context.params;
-    // Use the imported prisma instance directly
-    const audit = await prisma.audit.findUnique({
-      where: { id },
-    });
+    const { audit, unavailable } = await getAuditById(id);
 
     if (!audit) {
-      return NextResponse.json({ success: false, error: 'Audit not found' }, { status: 404 });
+      return NextResponse.json(
+        {
+          success: false,
+          error: unavailable
+            ? 'Audit storage is temporarily unavailable'
+            : 'Audit not found',
+        },
+        { status: unavailable ? 503 : 404 }
+      );
     }
 
     const auditResult = {
       id: audit.id,
-      createdAt: audit.createdAt.toISOString(),
+      createdAt: new Date(audit.createdAt).toISOString(),
       totalMonthlySpend: audit.totalMonthlySpend,
       totalMonthlySavings: audit.totalMonthlySavings,
       totalAnnualSavings: audit.totalAnnualSavings,
