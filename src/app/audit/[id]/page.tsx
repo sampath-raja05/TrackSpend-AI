@@ -61,20 +61,18 @@ export default function AuditResultsPage() {
         return;
       }
 
-      const loadCachedAudit = () => {
+      const loadCachedAudit = (): AuditResult | null => {
         const cachedAudit = localStorage.getItem(
           `audit_${auditId}`
         );
 
-        if (!cachedAudit) return false;
+        if (!cachedAudit) return null;
 
         try {
-          setResult(JSON.parse(cachedAudit) as AuditResult);
-          setErrorMessage(null);
-          return true;
+          return JSON.parse(cachedAudit) as AuditResult;
         } catch (parseError) {
           console.error("Failed to read cached audit:", parseError);
-          return false;
+          return null;
         }
       };
 
@@ -89,6 +87,13 @@ export default function AuditResultsPage() {
           );
 
         if (response.status === 503) {
+          const cachedAudit = loadCachedAudit();
+          if (cachedAudit) {
+            setResult(cachedAudit);
+            setErrorMessage(null);
+            return;
+          }
+
           setErrorMessage(
             data.error || "Audit storage is temporarily unavailable. Please try again in a moment."
           );
@@ -96,6 +101,13 @@ export default function AuditResultsPage() {
         }
 
         if (!response.ok || !data.success || !data.data) {
+          const cachedAudit = loadCachedAudit();
+          if (cachedAudit) {
+            setResult(cachedAudit);
+            setErrorMessage(null);
+            return;
+          }
+
           throw new Error(
             data.error || "Unable to load this audit report."
           );
@@ -103,22 +115,27 @@ export default function AuditResultsPage() {
 
         setResult(data.data);
       } catch (error) {
-        if (!loadCachedAudit()) {
-          if (
-            error instanceof Error &&
-            error.message === "Audit storage is temporarily unavailable"
-          ) {
-            setErrorMessage(error.message);
-            return;
-          }
-
-          console.error("Error fetching audit:", error);
-          setErrorMessage(
-            error instanceof Error
-              ? error.message
-              : "Unable to load this audit report."
-          );
+        const cachedAudit = loadCachedAudit();
+        if (cachedAudit) {
+          setResult(cachedAudit);
+          setErrorMessage(null);
+          return;
         }
+
+        if (
+          error instanceof Error &&
+          error.message === "Audit storage is temporarily unavailable"
+        ) {
+          setErrorMessage(error.message);
+          return;
+        }
+
+        console.error("Error fetching audit:", error);
+        setErrorMessage(
+          error instanceof Error
+            ? error.message
+            : "Unable to load this audit report."
+        );
       } finally {
         setLoading(false);
       }

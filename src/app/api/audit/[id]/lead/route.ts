@@ -49,7 +49,7 @@ export async function POST(
       );
     }
 
-    const lead = saveLeadForAudit(
+    const lead = await saveLeadForAudit(
       id,
       parsed.data.email,
       parsed.data.teamSize ?? null

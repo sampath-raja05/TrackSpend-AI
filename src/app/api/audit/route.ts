@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     const summary = await generateAuditSummary({ auditResult });
     auditResult.aiSummary = summary;
 
-    const persisted = saveAuditResult(auditResult, lead);
+    const persisted = await saveAuditResult(auditResult, lead);
 
     // Send Email (Fire and forget, don't wait for it to finish)
     const resend = getResendClient();
